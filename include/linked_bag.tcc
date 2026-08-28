@@ -7,17 +7,87 @@
  * @copyright Copyright (c) 2025
  */
 
+#include <utility>
+
 template <typename T>
 LinkedBag<T>::LinkedBag() : head(nullptr), itemCount(0) {}
 
 template <typename T>
+LinkedBag<T>::LinkedBag(const LinkedBag& other) : head(nullptr), itemCount(0) {
+    copyFrom(other);
+}
+
+template <typename T>
+LinkedBag<T>::LinkedBag(LinkedBag&& other) noexcept
+        : head(other.head), itemCount(other.itemCount) {
+    other.head = nullptr;
+    other.itemCount = 0;
+}
+
+template <typename T>
+LinkedBag<T>& LinkedBag<T>::operator=(const LinkedBag& other) {
+    if (this != &other) {
+        LinkedBag copy(other);
+        swap(copy);
+    }
+    return *this;
+}
+
+template <typename T>
+LinkedBag<T>& LinkedBag<T>::operator=(LinkedBag&& other) noexcept {
+    if (this != &other) {
+        clear();
+        head = other.head;
+        itemCount = other.itemCount;
+        other.head = nullptr;
+        other.itemCount = 0;
+    }
+    return *this;
+}
+
+template <typename T>
 LinkedBag<T>::~LinkedBag() {
+    clear();
+}
+
+template <typename T>
+void LinkedBag<T>::clear() noexcept {
     Node<T>* current = head;
     while (current != nullptr) {
         Node<T>* next = current->getNext();
         delete current;
         current = next;
     }
+    head = nullptr;
+    itemCount = 0;
+}
+
+template <typename T>
+void LinkedBag<T>::copyFrom(const LinkedBag& other) {
+    Node<T>* tail = nullptr;
+    try {
+        for (Node<T>* current = other.head; current != nullptr;
+             current = current->getNext()) {
+            Node<T>* copy = new Node<T>(current->getData());
+            if (head == nullptr) {
+                head = copy;
+            } else {
+                tail->setNext(copy);
+            }
+            tail = copy;
+            itemCount++;
+        }
+    } catch (...) {
+        clear();
+        throw;
+    }
+}
+
+template <typename T>
+void LinkedBag<T>::swap(LinkedBag& other) noexcept {
+    using std::swap;
+    swap(head, other.head);
+    swap(itemCount, other.itemCount);
 }
 
 template <typename T>

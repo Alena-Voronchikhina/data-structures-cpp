@@ -19,9 +19,16 @@ private:
     int itemCount;
     
     Node<T>* getNodeAt(int position) const;
+    void clear() noexcept;
+    void copyFrom(const LinkedList& other);
+    void swap(LinkedList& other) noexcept;
 
 public:
     LinkedList();
+    LinkedList(const LinkedList& other);
+    LinkedList(LinkedList&& other) noexcept;
+    LinkedList& operator=(const LinkedList& other);
+    LinkedList& operator=(LinkedList&& other) noexcept;
     virtual ~LinkedList();
 
     virtual bool insert(int position, const T& item) override;

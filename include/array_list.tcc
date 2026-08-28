@@ -7,19 +7,76 @@
  * @copyright Copyright (c) 2025
  */
 
+#include <algorithm>
+#include <memory>
+#include <stdexcept>
+#include <utility>
+
 template <typename T>
 ArrayList<T>::ArrayList() : itemCount(0), capacity(DEFAULT_CAPACITY) {
     items = new T[DEFAULT_CAPACITY];
 }
 
 template <typename T>
-ArrayList<T>::ArrayList(int capacity) : itemCount(0), capacity(capacity) {
+ArrayList<T>::ArrayList(int capacity) : items(nullptr), itemCount(0), capacity(capacity) {
+    if (capacity < 0) {
+        throw std::invalid_argument("capacity must be non-negative");
+    }
     items = new T[capacity];
+}
+
+template <typename T>
+ArrayList<T>::ArrayList(const ArrayList& other)
+        : items(nullptr), itemCount(other.itemCount), capacity(other.capacity) {
+    std::unique_ptr<T[]> copy(new T[capacity]);
+    if (itemCount > 0) {
+        std::copy(other.items, other.items + itemCount, copy.get());
+    }
+    items = copy.release();
+}
+
+template <typename T>
+ArrayList<T>::ArrayList(ArrayList&& other) noexcept
+        : items(other.items), itemCount(other.itemCount), capacity(other.capacity) {
+    other.items = nullptr;
+    other.itemCount = 0;
+    other.capacity = 0;
+}
+
+template <typename T>
+ArrayList<T>& ArrayList<T>::operator=(const ArrayList& other) {
+    if (this != &other) {
+        ArrayList copy(other);
+        swap(copy);
+    }
+    return *this;
+}
+
+template <typename T>
+ArrayList<T>& ArrayList<T>::operator=(ArrayList&& other) noexcept {
+    if (this != &other) {
+        delete[] items;
+        items = other.items;
+        itemCount = other.itemCount;
+        capacity = other.capacity;
+        other.items = nullptr;
+        other.itemCount = 0;
+        other.capacity = 0;
+    }
+    return *this;
 }
 
 template <typename T>
 ArrayList<T>::~ArrayList() {
     delete[] items;
+}
+
+template <typename T>
+void ArrayList<T>::swap(ArrayList& other) noexcept {
+    using std::swap;
+    swap(items, other.items);
+    swap(itemCount, other.itemCount);
+    swap(capacity, other.capacity);
 }
 
 template <typename T>

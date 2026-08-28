@@ -19,10 +19,15 @@ class ArrayBag : public Bag<T> {
         int itemCount;
         int capacity;
         int getIndexOf(const T& item) const;
+        void swap(ArrayBag& other) noexcept;
 
     public:
         ArrayBag();
-        ArrayBag(int capacity);
+        explicit ArrayBag(int capacity);
+        ArrayBag(const ArrayBag& other);
+        ArrayBag(ArrayBag&& other) noexcept;
+        ArrayBag& operator=(const ArrayBag& other);
+        ArrayBag& operator=(ArrayBag&& other) noexcept;
         virtual ~ArrayBag();
 
         virtual void add(const T& item) override;

@@ -18,10 +18,15 @@ private:
     T* items;
     int itemCount;
     int capacity;
+    void swap(ArrayList& other) noexcept;
 
 public:
     ArrayList();
-    ArrayList(int capacity);
+    explicit ArrayList(int capacity);
+    ArrayList(const ArrayList& other);
+    ArrayList(ArrayList&& other) noexcept;
+    ArrayList& operator=(const ArrayList& other);
+    ArrayList& operator=(ArrayList&& other) noexcept;
     virtual ~ArrayList();
 
     virtual bool insert(int position, const T& item) override;

@@ -9,6 +9,8 @@
 
 #include <iostream>
 #include <cassert>
+#include <stdexcept>
+#include <utility>
 #include "array_list.h"
 #include "linked_list.h"
 
@@ -108,9 +110,52 @@ void testLinkedList() {
     std::cout << "LinkedList tests passed!" << std::endl;
 }
 
+template <typename ListType>
+void testListValueSemantics() {
+    ListType original;
+    assert(original.insert(1, 10));
+    assert(original.insert(2, 20));
+
+    ListType copy(original);
+    assert(original.remove(1));
+    int value = 0;
+    assert(copy.get(1, value));
+    assert(value == 10);
+
+    ListType assigned;
+    assigned = copy;
+    assert(copy.remove(2));
+    assert(assigned.get(2, value));
+    assert(value == 20);
+
+    ListType moved(std::move(assigned));
+    assert(assigned.isEmpty());
+    assert(moved.size() == 2);
+
+    ListType moveAssigned;
+    assert(moveAssigned.insert(1, 99));
+    moveAssigned = std::move(moved);
+    assert(moved.isEmpty());
+    assert(moveAssigned.get(1, value));
+    assert(value == 10);
+}
+
+void testArrayListRejectsNegativeCapacity() {
+    bool rejected = false;
+    try {
+        ArrayList<int> invalid(-1);
+    } catch (const std::invalid_argument&) {
+        rejected = true;
+    }
+    assert(rejected);
+}
+
 int main() {
     testArrayList();
     testLinkedList();
+    testArrayListRejectsNegativeCapacity();
+    testListValueSemantics<ArrayList<int> >();
+    testListValueSemantics<LinkedList<int> >();
     std::cout << "All tests passed!" << std::endl;
     return 0;
 }

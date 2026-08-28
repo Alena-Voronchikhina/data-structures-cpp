@@ -18,10 +18,15 @@ private:
     T* items;
     int top;
     int capacity;
+    void swap(ArrayStack& other) noexcept;
 
 public:
     ArrayStack();
-    ArrayStack(int capacity);
+    explicit ArrayStack(int capacity);
+    ArrayStack(const ArrayStack& other);
+    ArrayStack(ArrayStack&& other) noexcept;
+    ArrayStack& operator=(const ArrayStack& other);
+    ArrayStack& operator=(ArrayStack&& other) noexcept;
     virtual ~ArrayStack();
 
     virtual void push(const T& item) override;

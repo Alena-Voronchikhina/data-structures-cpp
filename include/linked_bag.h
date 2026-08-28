@@ -19,9 +19,16 @@ private:
     int itemCount;
     
     Node<T>* getPointerTo(const T& item) const;
+    void clear() noexcept;
+    void copyFrom(const LinkedBag& other);
+    void swap(LinkedBag& other) noexcept;
 
 public:
     LinkedBag();
+    LinkedBag(const LinkedBag& other);
+    LinkedBag(LinkedBag&& other) noexcept;
+    LinkedBag& operator=(const LinkedBag& other);
+    LinkedBag& operator=(LinkedBag&& other) noexcept;
     virtual ~LinkedBag();
     
     virtual void add(const T& item) override;

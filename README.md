@@ -10,13 +10,18 @@
  * linked-list-based backends.
  */
 
-# Data Structures Implementation
+# Data Structures in C++
+
+Array-backed and linked-node implementations of Bag, Stack, and List abstract
+data types. The owning containers implement deep-copy and move semantics so
+copies remain independent and destruction is safe.
 
 ## Implemented ADTs
 
-- Bag (Array and Linked implementations)
-- Stack (Array and Linked implementations)
-- List (Array and Linked implementations)
+- Bag: array and linked implementations
+- Stack: array and linked implementations
+- List: array and linked implementations
+- Rule-of-Five ownership for all six concrete containers
 
 ## Project Structure
 
@@ -24,7 +29,7 @@
 data-structures-cpp/
 ├── include/           # Headers and template implementations
 ├── tests/             # Test drivers
-├── build/             # Compiled binaries
+├── .github/workflows/ # Linux/macOS CI and sanitizer job
 ├── Makefile
 └── README.md
 ```
@@ -32,8 +37,10 @@ data-structures-cpp/
 ## Building
 
 ```bash
-make              # Build all tests
-make clean        # Clean build artifacts
+make           # Build all test executables
+make test      # Build and run the test suite
+make sanitize  # Run the suite with ASan and UBSan
+make clean     # Remove build artifacts
 ```
 
 Or compile manually:
@@ -43,15 +50,14 @@ g++ -std=c++11 -I./include -o build/stack_test tests/stack_test.cpp
 g++ -std=c++11 -I./include -o build/list_test tests/list_test.cpp
 ```
 
-## Running Tests
-
-```bash
-./build/bag_test
-./build/stack_test
-./build/list_test
-```
-
 ## Implementation Notes
 
 Each ADT is implemented with both array-based and linked-list-based backends.
-Template implementations are included directly in the `include/` directory.
+Template implementations are included directly from the headers. Array-backed
+containers own dynamic arrays; linked containers own their node chains. Copy
+construction and copy assignment perform deep copies, while move operations
+transfer ownership and leave the source empty.
+
+Tests cover core operations, invalid positions, copy independence, move
+construction, and move assignment. CI runs the tests on Linux and macOS, plus
+an Ubuntu ASan/UBSan job.

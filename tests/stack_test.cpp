@@ -9,6 +9,8 @@
 
 #include <iostream>
 #include <cassert>
+#include <stdexcept>
+#include <utility>
 #include "array_stack.h"
 #include "linked_stack.h"
 
@@ -92,9 +94,52 @@ void testLinkedStack() {
     std::cout << "LinkedStack tests passed!" << std::endl;
 }
 
+template <typename StackType>
+void testStackValueSemantics() {
+    StackType original;
+    original.push(10);
+    original.push(20);
+
+    StackType copy(original);
+    int value = 0;
+    assert(original.pop(value));
+    assert(copy.peek(value));
+    assert(value == 20);
+
+    StackType assigned;
+    assigned = copy;
+    assert(copy.pop(value));
+    assert(assigned.peek(value));
+    assert(value == 20);
+
+    StackType moved(std::move(assigned));
+    assert(assigned.isEmpty());
+    assert(moved.size() == 2);
+
+    StackType moveAssigned;
+    moveAssigned.push(99);
+    moveAssigned = std::move(moved);
+    assert(moved.isEmpty());
+    assert(moveAssigned.peek(value));
+    assert(value == 20);
+}
+
+void testArrayStackRejectsNegativeCapacity() {
+    bool rejected = false;
+    try {
+        ArrayStack<int> invalid(-1);
+    } catch (const std::invalid_argument&) {
+        rejected = true;
+    }
+    assert(rejected);
+}
+
 int main() {
     testArrayStack();
     testLinkedStack();
+    testArrayStackRejectsNegativeCapacity();
+    testStackValueSemantics<ArrayStack<int> >();
+    testStackValueSemantics<LinkedStack<int> >();
     std::cout << "All tests passed!" << std::endl;
     return 0;
 }
